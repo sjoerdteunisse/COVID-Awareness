@@ -1,4 +1,7 @@
-from flask import Flask, request, jsonify
+
+# A very simple Flask Hello World app for you to get started with...
+
+from flask import Flask, request, jsonify, render_template
 
 import numpy as np
 import pandas as pd
@@ -19,6 +22,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, rando
 lr = LinearRegression()
 lr.fit(X_train, y_train)
 
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response
+
 
 @app.route("/api/v1/dataset")
 def jsonTest():
@@ -28,6 +38,8 @@ def jsonTest():
 def parse_request():
     data = request.json
 
-    predictions = lr.predict([[data["pI"], data["sH"], data["hI"], data["wH"], data["m"], data["sD"]]])
-    return jsonify({"result": predictions[:10][0]})
+    predictions = lr.predict([[ int(data["pI"]) , int(data["sH"]) , int(data["hI"]), int(data["wH"]), int(data["m"]), int(data["sD"]) ]])
+    response = jsonify({"result": predictions[:10][0]})
+
+    return response
 

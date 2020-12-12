@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 
 import numpy as np
 import pandas as pd
@@ -34,6 +34,10 @@ def jsonTest():
 @app.route('/api/v1/predict', methods=['GET','POST'])
 def parse_request():
     data = request.json
+
+
+    if(not "pI" in data or not "sH" in data or not "hI" in data or "wH" not in data or "m" not in data or "sD" not in data):
+        return Response("{'error':'please fill in all the fields'}", status=400, mimetype='application/json')
 
     predictions = lr.predict([[ int(data["pI"]) , int(data["sH"]) , int(data["hI"]), int(data["wH"]), int(data["m"]), int(data["sD"]) ]])
     response = jsonify({"result": predictions[:10][0]})
